@@ -1,7 +1,7 @@
 **Read this in other languages: [English](README.md), [中文](README_zh.md).**
 
 
-# qBittorrent Client Xunlei
+# qBittorrent Filter Xunlei
 
 This script automates the process of filtering unwanted clients from qBittorrent based on predefined rules.
 
