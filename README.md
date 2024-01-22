@@ -1,4 +1,7 @@
-# IP Filter for qBittorrent
+**Read this in other languages: [English](README.md), [中文](README_zh.md).**
+
+
+# qBittorrent Client Xunlei
 
 This script automates the process of filtering unwanted clients from qBittorrent based on predefined rules.
 
@@ -51,3 +54,14 @@ rule_4 = Xfplay,1
 rule_5 = go.torrent,1
 rule_6 = QQDownload,1
 rule_7 = 7.,2
+```
+
+
+# Usage
+
+```ini
+python qBittorrentBan.py
+```
+
+The script will continuously run, periodically checking and updating the IP filter in qBittorrent.
+
