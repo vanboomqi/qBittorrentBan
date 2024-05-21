@@ -100,7 +100,7 @@ def is_qBittorrent_connected(api_url):
     global cookie_jar, is_network_error
 
     try:
-        response = requests.get(api_url, cookies=cookie_jar, timeout=5)
+        response = requests.get(root_url, timeout=5)
         response.raise_for_status()
         if is_network_error:
             print("Network connection has been restored!")
@@ -117,6 +117,19 @@ def parse_filter_rules(config):
         name, find_type = config['FilterRules'][key].split(',')
         filter_rules.append({'name': name, 'findType': int(find_type)})
     return filter_rules
+
+
+def check_login_status(api_url, cookie_jar):
+    try:
+        response = requests.get(api_url, cookies=cookie_jar, timeout=5)
+        response.raise_for_status()
+        return True
+    except requests.exceptions.RequestException as e:
+        print(f"与 qBittorrent 的连接异常，等待重新登录: {e}")
+        return False
+
+
+
 
 if __name__ == "__main__":
 
@@ -141,15 +154,18 @@ if __name__ == "__main__":
                 '; findType': 'where findType is 1 for contains matching, 2 for prefix matching',
                             'rule_1': '-XL0012,1',
                             'rule_2': '-XL0012-,1',
-                            'rule_3': 'Xunlei,1',
+                            'rule_3': 'Xun,1',
                             'rule_4': 'Xfplay,1',
                             'rule_5': 'go.torrent,1',
                             'rule_6': 'QQDownload,1',
-                            'rule_7': '7.,2'}
+                            'rule_7': '7.,2',}
 
         # Write to the configuration file
         with open(config_file_path, 'w') as config_file:
             config.write(config_file)
+        
+        print("Please configure the 'config.ini' file and then run the program again.")
+        exit(0)
 
     # Read the configuration file
     config = configparser.ConfigParser()
@@ -214,6 +230,16 @@ if __name__ == "__main__":
         if not is_qBittorrent_connected(api_url):
             time.sleep(10)  # Retry after waiting for 10 seconds
             continue
+        
+        if not is_qBittorrent_connected(api_url):
+        # 重新登录获取新的 cookie
+            response = requests.post(login_url, data=data, headers=headers)
+            if response.text == 'Ok.':
+                cookie_jar = response.cookies
+                print("重新登录成功！")
+            else:
+                print("重新登录失败，请检查用户名和密码。")
+                exit(0)
         downItem = getDownloadItem(mainData_url, cookie_jar)
         downloadList = []
         for torrent in downItem:
